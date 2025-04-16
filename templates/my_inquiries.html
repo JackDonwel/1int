@@ -1,0 +1,236 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<style>
+    /* WhatsApp-like Chat Interface */
+    body {
+        background: #e0e0e0;
+        margin: 0;
+        padding: 20px;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    .chat-container {
+        max-width: 900px;
+        margin: 20px auto;
+        background: #efeae2 url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAACoCAMAAABt9SM9AAAAA1BMVEX///+nxBvIAAAAR0lEQVR4nO3BAQ0AAADCoPdPbQ43oAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIC3AcUIAAFkqh/QAAAAAElFTkSuQmCC');
+        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.15);
+        height: 80vh;
+        display: flex;
+        flex-direction: column;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .chat-messages {
+        flex: 1;
+        padding: 20px 16px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    /* Scrollbar Styling */
+    .chat-messages::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .chat-messages::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.1);
+    }
+
+    .chat-messages::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 3px;
+    }
+
+    .message {
+        max-width: 65%;
+        padding: 8px 12px 20px 12px;
+        position: relative;
+        font-size: 14.2px;
+        line-height: 1.4;
+        word-wrap: break-word;
+        margin: 2px 0;
+        border-radius: 7.5px;
+        box-shadow: 0 1px 0.5px rgba(0, 0, 0, 0.13);
+    }
+
+    .user-msg {
+        background: #d9fdd3;
+        margin-left: auto;
+        border-radius: 7.5px 0 7.5px 7.5px;
+        margin-right: 8px;
+    }
+
+    .user-msg::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        right: -8px;
+        width: 0;
+        height: 0;
+        border: 8px solid transparent;
+        border-left-color: #d9fdd3;
+        border-right: 0;
+        border-bottom: 0;
+        margin-bottom: -3px;
+    }
+
+    .staff-msg {
+        background: #ffffff;
+        margin-right: auto;
+        border-radius: 0 7.5px 7.5px 7.5px;
+        margin-left: 8px;
+    }
+
+    .staff-msg::before {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: -8px;
+        width: 0;
+        height: 0;
+        border: 8px solid transparent;
+        border-right-color: #ffffff;
+        border-left: 0;
+        border-bottom: 0;
+        margin-bottom: -3px;
+    }
+
+    .timestamp {
+        position: absolute;
+        bottom: 4px;
+        right: 8px;
+        color: #667781;
+        font-size: 0.7em;
+        display: flex;
+        align-items: center;
+        gap: 3px;
+    }
+
+    .staff-msg .timestamp {
+        left: 8px;
+        right: auto;
+    }
+
+    .chat-form {
+        background: #f0f2f5;
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border-top: 1px solid #d1d7db;
+    }
+
+    .input-container {
+        flex: 1;
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .chat-input {
+        flex: 1;
+        padding: 9px 20px;
+        border: none;
+        border-radius: 20px;
+        font-size: 14px;
+        background: #ffffff;
+        outline: none;
+        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.08);
+    }
+
+    .chat-input:focus {
+        box-shadow: 0 0 0 2px #0084ff;
+    }
+
+    .file-upload label {
+        color: #667781;
+        cursor: pointer;
+        padding: 8px;
+        transition: color 0.2s;
+    }
+
+    .file-upload label:hover {
+        color: #0084ff;
+    }
+
+    .send-btn {
+        background: #0084ff;
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        cursor: pointer;
+        transition: background 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .send-btn:hover {
+        background: #0077e6;
+    }
+
+    .notification-badge {
+        background: #ff3b30;
+        color: white;
+        font-size: 12px;
+        padding: 3px 8px;
+        border-radius: 12px;
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    .message img {
+        max-width: 250px;
+        border-radius: 7.5px;
+        margin-top: 5px;
+        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<div class="chat-container">
+    <div class="chat-messages">
+        {% for ticket in tickets %}
+        <div class="message {% if ticket.is_staff %}staff-msg{% else %}user-msg{% endif %}">
+            {% if ticket.message %}
+            <p>{{ ticket.message }}</p>
+            {% endif %}
+            {% if ticket.image %}
+            <img src="{{ ticket.image.url }}" alt="Uploaded image">
+            {% endif %}
+            <span class="timestamp">
+                {{ ticket.timestamp|date:"H:i" }}
+                {% if ticket.is_staff %}<i class="fas fa-check"></i>{% endif %}
+            </span>
+        </div>
+        {% endfor %}
+    </div>
+
+    <form method="POST" enctype="multipart/form-data" class="chat-form">
+        {% csrf_token %}
+        <div class="input-container">
+            <div class="file-upload">
+                <label for="id_image">
+                    <i class="fas fa-paperclip"></i>
+                </label>
+                {{ form.image }}
+            </div>
+            {{ form.message }}
+            <button type="submit" class="send-btn">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </form>
+</div>
+
+<div style="position: fixed; top: 20px; right: 20px;">
+    <span class="notification-badge">3 New</span>
+</div>

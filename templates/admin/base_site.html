@@ -1,0 +1,51 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block extrahead %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/custom.css' %}">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+    /* ... keep your existing styles ... */
+</style>
+{% endblock %}
+
+{% block header %}
+<nav class="bg-gray-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <span class="text-white text-xl font-bold">TLS Admin</span>
+                </div>
+                <div class="hidden md:block ml-10">
+                    <div class="flex space-x-4">
+                        <!-- Existing navigation items -->
+                        <a href="{% url 'admin:custom_dashboard.html' %}" 
+                           class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
+                            Dashboard
+                        </a>
+                        <a href="{% url 'admin:core_advocate_changelist' %}" 
+                           class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
+                            Advocates
+                        </a>
+                        <!-- Application Page Button -->
+                        <a href="{% url 'apply_stamp' %}" 
+                           class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
+                            New Application
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <!-- Logout Button -->
+            <div class="hidden md:block">
+                <a href="{% url 'admin:logout' %}" 
+                   class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
+                    Logout
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+{% endblock %}

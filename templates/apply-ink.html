@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="order-form">
+    <h2>Ink Order Request</h2>
+    <form method="POST" action="{% url 'order_ink' %}">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="type">Ink Type:</label>
+            <select class="form-control" id="type" name="type" required>
+                <option value="">Select Ink Type</option>
+                <option value="black">Blue Ink</option>
+                <option value="color">Color Ink</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="quantity">Quantity:</label>
+            <input type="number" class="form-control" id="quantity" name="quantity" min="1" required>
+        </div>
+
+        <div class="form-group">
+            <label for="urgency">Urgency:</label>
+            <select class="form-control" id="urgency" name="urgency" required>
+                <option value="normal">Normal (3-5 days)</option>
+                <option value="urgent">Urgent (24 hours)</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="notes">Special Instructions:</label>
+            <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="contact">Contact Information:</label>
+            <input type="text" class="form-control" id="contact" name="contact" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit Order</button>
+    </form>
+</div>
+{% endblock %}
