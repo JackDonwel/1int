@@ -1,157 +1,354 @@
-<!-- templates/admin/custom_dashboard.html -->
-{% extends "admin/base.html" %}
+{% extends "admin/base_site.html" %}
 {% load static %}
 
-{% block extrastyle %}
-{{ block.super }}
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-<style>
-
-    body {
-        background: url("{% static 'images/law_background.jpg' %}") no-repeat center center fixed;
-        background-size: cover;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-/* Sidebar Styles */
-.admin-sidebar {
-    position: fixed;
-    left: 0;
-    top: 64px; /* Below admin header */
-    bottom: 0;
-    width: 250px;
-    background: #2c3e50;
-    padding: 20px;
-    z-index: 1000;
-    transition: all 0.3s;
-}
-
-.sidebar-menu {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.sidebar-button {
-    display: flex;
-    align-items: center;
-    color: #ecf0f1;
-    padding: 12px 15px;
-    margin: 8px 0;
-    border-radius: 5px;
-    transition: all 0.3s;
-    text-decoration: none;
-}
-
-.sidebar-button:hover {
-    background: #34495e;
-    transform: translateX(5px);
-}
-
-.sidebar-button i {
-    width: 25px;
-    font-size: 18px;
-}
-
-/* Dropdown Styles */
-.dropdown-menu {
-    display: none;
-    padding-left: 30px;
-    list-style: none;
-}
-
-.dropdown-toggle::after {
-    content: "\f078";
-    font-family: "Font Awesome 5 Free";
-    margin-left: auto;
-    transition: transform 0.3s;
-}
-
-.dropdown-toggle.active::after {
-    transform: rotate(180deg);
-}
-
-/* Main Content Adjustment */
-.dashboard-container {
-    margin-left: 250px;
-    padding: 20px;
-}
-</style>
+{% block title %}
+    Admin Dashboard
 {% endblock %}
 
-{% block sidebar %}
-<div class="admin-sidebar">
-    <nav>
-        <ul class="sidebar-menu">
-            <!-- Main Buttons -->
-            <li>
-                <a href="{% url 'admin:core_advocate_changelist' %}" class="sidebar-button">
-                    <i class="fas fa-users"></i>
-                    Advocates
-                </a>
-            </li>
-
-            <!-- Dropdown Toggle Button -->
-            <li>
-                <a href="#" class="sidebar-button dropdown-toggle" onclick="toggleDropdown(event)">
-                    <i class="fas fa-stamp"></i>
-                    Stamp Actions
-                </a>
-                <ul class="dropdown-menu">
-                    <li><a href="{% url 'admin:core_stampapplication_changelist' %}" class="sidebar-button">All Applications</a></li>
-                    <li><a href="/admin/stamp-reports/" class="sidebar-button">Generate Reports</a></li>
-                    <li><a href="/admin/stamp-allocation/" class="sidebar-button">Stamp Allocation</a></li>
-                </ul>
-            </li>
-
-            <!-- More Buttons -->
-            <li>
-                <a href="{% url 'admin:core_auditlog_changelist' %}" class="sidebar-button">
-                    <i class="fas fa-clipboard-list"></i>
-                    Audit Logs
-                </a>
-            </li>
-
-            <li>
-                <a href="{% url 'admin:core_notification_changelist' %}" class="sidebar-button">
-                    <i class="fas fa-bell"></i>
-                    Notifications
-                    <span class="badge">42</span>
-                </a>
-            </li>
-
-            <!-- Add more buttons as needed -->
-        </ul>
-    </nav>
-</div>
+{% block extrahead %}
+    <link rel="stylesheet" href="{% static 'admin/css/custom_dashboard.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 {% endblock %}
-
 {% block content %}
+<style>
+    .dashboard-container {
+        padding: 20px;
+    }
+
+    .dashboard-container h1 {
+        font-size: 2rem;
+        margin-bottom: 20px;
+        color:rgb(53, 113, 69);
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 40px;
+    }
+
+    .card {
+        background-color: #fff;
+        padding: 20px;
+        border-left: 5px solid rgb(52, 219, 113);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        border-radius: 10px;
+    }
+
+    .card-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color:rgb(121, 143, 144);
+    }
+
+    .card-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color:rgb(44, 80, 53);
+    }
+    .tools-section {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        margin-top: 30px;
+        }
+
+    .tool-btn {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 24px;
+        background: linear-gradient(to right, #f39c12, #e67e22); /* Bright orange-gold */
+        color: #fff; 
+        font-weight: 600;
+        border-radius: 12px;
+        text-decoration: none;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        transition: all 0.3s ease;
+        font-size: 1rem;
+    }
+
+    .tool-btn {
+    background: linear-gradient(to right, #ffffff, #ecf0f1);
+    color: #2c3e50;
+    font-weight: 600;
+    border: 1px solid #bdc3c7;
+    }
+    .tool-btn:hover {
+        background: linear-gradient(to right,rgba(208, 236, 180, 0.8),rgb(217, 239, 214));
+          
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .tool-btn i {
+        font-size: 1.2rem;
+    }
+
+    
+    .notifications {
+        margin-top: 40px;
+    }
+
+    .notifications h3 {
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+        color: #2c3e50;
+    }
+
+    .notification-item {
+        padding: 15px;
+        border: 1px solid #ecf0f1;
+        margin-bottom: 10px;
+        background: #f9f9f9;
+        border-radius: 5px;
+    }
+
+    canvas {
+        margin: 20px auto;
+        display: block;
+        max-width: 100%;
+    }
+</style>
+
 <div class="dashboard-container">
-    <!-- Your existing dashboard content -->
-    <h1>Dashboard Overview</h1>
+    <h1>Welcome to the Admin Dashboard</h1>
+
+    <!-- 📊 STATISTICS -->
     <div class="stats-grid">
-        <!-- Your stats cards here -->
+        <div class="card">
+            <div class="card-title">Total Users</div>
+            <div class="card-value">{{ total_users }}</div>
+        </div>
+        <div class="card">
+            <div class="card-title">Logins (7 days)</div>
+            <div class="card-value">{{ recent_logins }}</div>
+        </div>
+        <div class="card">
+            <div class="card-title">Total Orders</div>
+            <div class="card-value">{{ total_orders }}</div>
+        </div>
+        <div class="card">
+            <div class="card-title">Pending Orders</div>
+            <div class="card-value">{{ pending_orders }}</div>
+        </div>
+        <div class="card">
+            <div class="card-title">Approved Orders</div>
+            <div class="card-value">{{ approved_orders }}</div>
+        </div>
+        <div class="card">
+            <div class="card-title">Rejected Orders</div>
+            <div class="card-value">{{ rejected_orders }}</div>
+        </div>
+    </div>
+
+    <div class="bg-gray-100 p-8 rounded-lg shadow-lg mb-8 max-w-2xl mx-auto">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Add New Product</h2>
+        
+        <form method="post" class=" space-y-6">
+            {% csrf_token %}
+            
+            <!-- Form Fields -->
+          <div class="flex flex-col space-y-6">
+                {% for field in form %}
+                    <div class="flex flex-col">
+                        <label for="{{ field.id_for_label }}" class="text-sm font-medium text-gray-700 mb-2">{{ field.label }}</label>
+                        <div class="relative">
+                            {{ field }}
+                            {% if field.errors %}
+                                <ul class="text-red-500 text-xs mt-1">
+                                    {% for error in field.errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-md shadow-md transition duration-300 ease-in-out transform hover:scale-105">
+                Add Product
+            </button>
+        </form>
+    </div>
+
+
+
+<!-- Products Table -->
+<div class="mt-10 bg-white p-6 rounded-lg shadow-md">
+    <h2 class="text-xl font-semibold mb-4">Product List</h2>
+    
+    {% if products %}
+    <div class="overflow-x-auto">
+        <table class="min-w-full table-auto border border-gray-200">
+            <thead class="bg-gray-100 text-left text-sm font-semibold text-gray-700">
+                <tr>
+                    <th class="p-3">Image</th>
+                    <th class="p-3">Name</th>
+                    <th class="p-3">Category</th>
+                    <th class="p-3">Price (TZS)</th>
+                    <th class="p-3">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="text-gray-700 text-sm divide-y divide-gray-200">
+                    {% for product in products %}
+                    <tr>
+                        <td class="p-3">
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" 
+                            alt="{{ product.name }}" 
+                            class="w-16 h-16 object-cover rounded-lg border border-gray-200 hover:scale-105 transition-transform">
+                    {% else %}
+                        <div class="w-16 h-16 bg-gray-100 rounded-lg border border-dashed border-gray-300 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                    {% endif %}
+                    </td>
+                    <td class="p-3">{{ product.name }}</td>
+                    <td class="p-3">{{ product.category }}</td>
+                    <td class="p-3">{{ product.price_tzs }}</td>
+                    <td class="p-3">
+                        <div class="flex space-x-2">
+                            <a href="{% url 'edit_product' product.id %}" class="text-blue-600 hover:text-blue-800">Edit</a>
+                            <a href="{% url 'delete_product' product.id %}" class="text-red-600 hover:text-red-800">Delete</a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+        <p class="text-gray-500">No products added yet.</p>
+    {% endif %}
+</div>
+
+
+
+    <!-- 🥧 CHART -->
+    <canvasn id="stampChart" width="400" height="200"></canvas>
+    <h2>Stamp Type Distribution</h2>
+        <h2>My Stamp Orders</h2>
+        <a href="{% url 'orders' %}">Create New Order</a>
+        <ul>
+            {% for order in orders %}
+            <li>{{ order.stamp_type }} | {{ order.quantity }} | {{ order.status }} | {{ order.created_at }}</li>
+            {% empty %}
+            <li>No orders yet.</li>
+            {% endfor %}
+        </ul>
+
+
+
+
+
+    <!-- 🛠️ ACTION BUTTONS -->
+ <div class="tools-section">
+    <a href="{{ button_url }}" class="tool-btn">
+        <i class="fas fa-folder-plus"></i> Manage Applications
+    </a>
+    <a href="#" class="tool-btn">
+        <i class="fas fa-box-open"></i> View Orders
+    </a>
+    <a href="{% url 'admin:auth_user_changelist' %}" class="tool-btn">
+        <i class="fas fa-user-cog"></i> User Management
+    </a>
+    <a href="#" class="tool-btn">
+        <i class="fas fa-file-alt"></i> Reports
+    </a>
+</div>
+
+    <!-- 🔔 NOTIFICATIONS -->
+    <div class="notifications">
+        <h3>Recent Notifications</h3>
+        {% if notifications %}
+            {% for note in notifications %}
+                <div class="notification-item">
+                    {{ note }}
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No new notifications.</p>
+        {% endif %}
     </div>
 </div>
 
+<!-- 📈 Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-function toggleDropdown(event) {
-    event.preventDefault();
-    const toggle = event.target.closest('.dropdown-toggle');
-    const dropdown = toggle.nextElementSibling;
-    
-    toggle.classList.toggle('active');
-    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-}
+    const ctx = document.getElementById('stampChart').getContext('2d');
 
-// Close dropdown when clicking outside
-document.addEventListener('click', function(e) {
-    if (!e.target.closest('.admin-sidebar')) {
-        document.querySelectorAll('.dropdown-menu').forEach(menu => {
-            menu.style.display = 'none';
-            menu.previousElementSibling.classList.remove('active');
-        });
+    let stampChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Stamp Types',
+                data: [],
+                backgroundColor: [
+                    '#3498db', '#2ecc71', '#f1c40f', '#e74c3c', '#9b59b6', '#1abc9c'
+                ],
+                borderColor: '#ecf0f1',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                },
+            }
+        }
+    });
+
+    async function fetchChartData() {
+        try {
+            const response = await fetch("{% url 'chart_data' %}");
+            const data = await response.json();
+
+            stampChart.data.labels = data.labels;
+            stampChart.data.datasets[0].data = data.values;
+            stampChart.update();
+        } catch (error) {
+            console.error("Chart data fetch failed:", error);
+        }
     }
-});
+
+    // Initial load
+    fetchChartData();
+
+    // Auto-update every 30 seconds
+    setInterval(fetchChartData, 30000);
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('stampChart').getContext('2d');
+    const stampChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: {{ stamp_types|safe }},
+            datasets: [{
+                label: 'Stamp Types',
+                data: {{ stamp_counts|safe }},
+                backgroundColor: ['#3498db', '#2ecc71', '#f1c40f', '#e74c3c', '#8e44ad'],
+                borderColor: '#fff',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                }
+            }
+        }
+    });
 </script>
 {% endblock %}
