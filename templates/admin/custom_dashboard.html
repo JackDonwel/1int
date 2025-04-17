@@ -1,0 +1,157 @@
+<!-- templates/admin/custom_dashboard.html -->
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block extrastyle %}
+{{ block.super }}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+
+    body {
+        background: url("{% static 'images/law_background.jpg' %}") no-repeat center center fixed;
+        background-size: cover;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+/* Sidebar Styles */
+.admin-sidebar {
+    position: fixed;
+    left: 0;
+    top: 64px; /* Below admin header */
+    bottom: 0;
+    width: 250px;
+    background: #2c3e50;
+    padding: 20px;
+    z-index: 1000;
+    transition: all 0.3s;
+}
+
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-button {
+    display: flex;
+    align-items: center;
+    color: #ecf0f1;
+    padding: 12px 15px;
+    margin: 8px 0;
+    border-radius: 5px;
+    transition: all 0.3s;
+    text-decoration: none;
+}
+
+.sidebar-button:hover {
+    background: #34495e;
+    transform: translateX(5px);
+}
+
+.sidebar-button i {
+    width: 25px;
+    font-size: 18px;
+}
+
+/* Dropdown Styles */
+.dropdown-menu {
+    display: none;
+    padding-left: 30px;
+    list-style: none;
+}
+
+.dropdown-toggle::after {
+    content: "\f078";
+    font-family: "Font Awesome 5 Free";
+    margin-left: auto;
+    transition: transform 0.3s;
+}
+
+.dropdown-toggle.active::after {
+    transform: rotate(180deg);
+}
+
+/* Main Content Adjustment */
+.dashboard-container {
+    margin-left: 250px;
+    padding: 20px;
+}
+</style>
+{% endblock %}
+
+{% block sidebar %}
+<div class="admin-sidebar">
+    <nav>
+        <ul class="sidebar-menu">
+            <!-- Main Buttons -->
+            <li>
+                <a href="{% url 'admin:core_advocate_changelist' %}" class="sidebar-button">
+                    <i class="fas fa-users"></i>
+                    Advocates
+                </a>
+            </li>
+
+            <!-- Dropdown Toggle Button -->
+            <li>
+                <a href="#" class="sidebar-button dropdown-toggle" onclick="toggleDropdown(event)">
+                    <i class="fas fa-stamp"></i>
+                    Stamp Actions
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a href="{% url 'admin:core_stampapplication_changelist' %}" class="sidebar-button">All Applications</a></li>
+                    <li><a href="/admin/stamp-reports/" class="sidebar-button">Generate Reports</a></li>
+                    <li><a href="/admin/stamp-allocation/" class="sidebar-button">Stamp Allocation</a></li>
+                </ul>
+            </li>
+
+            <!-- More Buttons -->
+            <li>
+                <a href="{% url 'admin:core_auditlog_changelist' %}" class="sidebar-button">
+                    <i class="fas fa-clipboard-list"></i>
+                    Audit Logs
+                </a>
+            </li>
+
+            <li>
+                <a href="{% url 'admin:core_notification_changelist' %}" class="sidebar-button">
+                    <i class="fas fa-bell"></i>
+                    Notifications
+                    <span class="badge">42</span>
+                </a>
+            </li>
+
+            <!-- Add more buttons as needed -->
+        </ul>
+    </nav>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Your existing dashboard content -->
+    <h1>Dashboard Overview</h1>
+    <div class="stats-grid">
+        <!-- Your stats cards here -->
+    </div>
+</div>
+
+<script>
+function toggleDropdown(event) {
+    event.preventDefault();
+    const toggle = event.target.closest('.dropdown-toggle');
+    const dropdown = toggle.nextElementSibling;
+    
+    toggle.classList.toggle('active');
+    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.admin-sidebar')) {
+        document.querySelectorAll('.dropdown-menu').forEach(menu => {
+            menu.style.display = 'none';
+            menu.previousElementSibling.classList.remove('active');
+        });
+    }
+});
+</script>
+{% endblock %}

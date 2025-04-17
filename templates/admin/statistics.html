@@ -1,0 +1,87 @@
+{% extends 'admin/base_site.html' %}
+
+{% block content %}
+<h2>Admin Statistics</h2>
+
+<canvas id="applicationStatusChart" width="400" height="200"></canvas>
+<canvas id="orderActivityChart" width="400" height="200" style="margin-top: 40px;"></canvas>
+<canvas id="inkStampChart" width="400" height="200" style="margin-top: 40px;"></canvas>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<h2>Admin Statistics</h2>
+<ul>
+    <li>Total Users: {{ total_users }}</li>
+    <li>Total Advocates: {{ total_advocates }}</li>
+    <li>Total Applications: {{ total_applications }}</li>
+</ul>
+
+<h3>Application Status Counts</h3>
+<ul>
+    {% for status, count in application_status_counts.items %}
+        <li>{{ status }}: {{ count }}</li>
+    {% endfor %}
+</ul>
+
+<h3>Recent Applications</h3>
+<table>
+    <tr>
+        <th>Advocate</th>
+        <th>Status</th>
+        <th>Date</th>
+    </tr>
+    {% for app in recent_applications %}
+    <tr>
+        <td>{{ app.advocate.user.username }}</td>
+        <td>{{ app.status }}</td>
+        <td>{{ app.application_date }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<script>
+    // Application Status Chart
+    const statusLabels = {{ application_status_counts.keys|safe }};
+    const statusData = {{ application_status_counts.values|safe }};
+
+    new Chart(document.getElementById('applicationStatusChart'), {
+        type: 'doughnut',
+        data: {
+            labels: statusLabels,
+            datasets: [{
+                label: 'Application Status',
+                data: statusData,
+                backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444'],
+                borderWidth: 1
+            }]
+        }
+    });
+
+    // Order Activity (Sample data - replace with real from context)
+    new Chart(document.getElementById('orderActivityChart'), {
+        type: 'bar',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+            datasets: [{
+                label: 'Orders per Month',
+                data: [12, 19, 3, 5, 8],
+                backgroundColor: '#6366f1'
+            }]
+        }
+    });
+
+    // Ink & Stamp Activity (Sample data - replace with real from context)
+    new Chart(document.getElementById('inkStampChart'), {
+        type: 'line',
+        data: {
+            labels: ['Ink Requests', 'Stamp Requests'],
+            datasets: [{
+                label: 'Usage Frequency',
+                data: [15, 22],
+                fill: false,
+                borderColor: '#14b8a6',
+                tension: 0.3
+            }]
+        }
+    });
+</script>
+
+{% endblock %}

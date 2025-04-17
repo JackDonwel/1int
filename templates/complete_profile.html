@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card mx-auto" style="max-width: 500px;">
+        <div class="card-header bg-primary text-white">
+            <h4>Complete Your Advocate Profile</h4>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary mt-3">
+                    Save Profile
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
