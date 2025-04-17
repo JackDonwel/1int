@@ -30,6 +30,38 @@ class SupportTicket(models.Model):
         return f"Ticket #{self.id} - {self.get_status_display()}"
 
 
+class StampOrder(models.Model):
+    STAMP_TYPES = [
+        ('official', 'Official'),
+        ('personal', 'Personal'),
+        ('corporate', 'Corporate'),
+    ]
+
+    stamp_type = models.CharField(max_length=20, choices=STAMP_TYPES)
+    description = models.TextField()
+    quantity = models.PositiveIntegerField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    status = models.CharField(max_length=20, choices=[
+        ('pending', 'Pending'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected')
+    ], default='pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.stamp_type} order by {self.user.username}"
+
+
+class Inquiry(models.Model):
+    full_name = models.CharField(max_length=100)
+    email = models.EmailField()
+    subject = models.CharField(max_length=200)
+    message = models.TextField()
+    submitted_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.full_name} - {self.subject}"
+
 class Order(models.Model):
     """Ink order details for a user."""
     COLOR_CHOICES = [('blue1', 'Blue Type 1')]
@@ -175,7 +207,7 @@ class SupportTicket(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     message = models.TextField(blank=True, null=True)
     image = models.ImageField(upload_to='support_images/', blank=True, null=True)
-    is_staff = models.BooleanField(default=False)  # True = staff reply
+    is_staff = models.BooleanField(default=False)
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -254,3 +286,89 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"{self.notification_type} to {self.recipient}: {self.subject}"
+
+
+
+# # Admin settings for the application
+import json
+
+class AdminSetting(models.Model):
+    SETTING_TYPES = (
+        ('str', 'String'),
+        ('int', 'Integer'),
+        ('bool', 'Boolean'),
+        ('json', 'JSON'),
+    )
+
+    key = models.CharField(max_length=50, unique=True)
+    value = models.TextField()
+    data_type = models.CharField(max_length=10, choices=SETTING_TYPES, default='str')
+    description = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.key
+
+    @classmethod
+    def get_setting(cls, key, default=None):
+        try:
+            setting = cls.objects.get(key=key)
+            return setting.get_typed_value()
+        except cls.DoesNotExist:
+            return default
+
+    def get_typed_value(self):
+        if self.data_type == 'int':
+            return int(self.value)
+        elif self.data_type == 'bool':
+            return self.value.lower() in ['true', '1', 'yes']
+        elif self.data_type == 'json':
+            return json.loads(self.value)
+        return self.value
+    
+    #------------------ Product Model ------------------#
+
+class Product(models.Model):
+    CATEGORY_CHOICES = [
+        ('law_book', 'Law Book'),
+        ('journal', 'Law Journal'),
+        ('stationery', 'Legal Stationery'),
+        ('service', 'Legal Service'),
+        ('tool', 'Legal Tool'),
+        ('other', 'Other'),
+    ]
+
+    name = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    price_tzs = models.DecimalField(max_digits=10, decimal_places=2)
+    category = models.CharField(max_length=50, choices=CATEGORY_CHOICES)
+    image = models.ImageField(upload_to='product_images/', blank=True, null=True)
+    created = models.DateTimeField(auto_now_add=True) 
+    
+    
+    def __str__(self):
+        return self.name
+    
+    #------------------ User Profile Model ------------------#
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    ward = models.CharField(max_length=100, blank=True)
+    district = models.CharField(max_length=100, blank=True)
+    region = models.CharField(max_length=100, blank=True)
+    country = models.CharField(max_length=100, blank=True)
+    law_firm = models.CharField(max_length=100, blank=True)
+    chapters = models.CharField(max_length=100, blank=True)
+    advocate_chapter = models.CharField(max_length=100, blank=True)
+    advocate_title = models.CharField(max_length=100, blank=True)
+    practicing_law = models.BooleanField(default=False)
+    practicing_status = models.CharField(max_length=100, blank=True)
+    id_type = models.CharField(max_length=100, blank=True)
+    id_number = models.CharField(max_length=100, blank=True)
+    id_expiry_date = models.DateField(blank=True, null=True)
+    id_image = models.ImageField(upload_to='id_images/', blank=True, null=True)
+    tls_id = models.CharField(max_length=100, blank=True)
+    
+    
+    def __str__(self):
+        return f"{self.user.username}'s Profile"
