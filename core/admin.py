@@ -15,8 +15,11 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.contrib import messages
 import json
 from .models import Order
-
+from .models import StampOrder
 from .models import Advocate, StampApplication, AuditLog, Notification, Order, SupportTicket
+from core.views import custom_dashboard
+
+
 
 # ------ Custom Admin Site ------
 from django.contrib.admin import AdminSite
@@ -142,34 +145,12 @@ def admin_queue(request):
         'applications': pending_applications
     })  
 
-@staff_member_required
-def custom_dashboard(request):
-    total_users = User.objects.count()
-    recent_logins = AuditLog.objects.filter(
-        action='login',
-        timestamp__gte=timezone.now() - timezone.timedelta(days=7)
-    ).count()
 
-    stamp_stats = StampApplication.objects.aggregate(
-        total_orders=Count('id'),
-        pending=Count('id', filter=Q(status='pending')),
-        approved=Count('id', filter=Q(status='ready')),
-        rejected=Count('id', filter=Q(status='rejected')),
-    )
-
-    context = {
-        'total_users': total_users,
-        'recent_logins': recent_logins,
-        'total_orders': stamp_stats['total_orders'],
-        'pending_orders': stamp_stats['pending'],
-        'approved_orders': stamp_stats['approved'],
-        'rejected_orders': stamp_stats['rejected'],
-        'stamp_types': StampApplication.objects.values('stamp_type').annotate(total=Count('id')),
-        'notifications': Notification.objects.order_by('-sent_at')[:5],
-        'button_url': '/admin/some_page/'  # Button URL or any path
-    }
-    return render(request, 'admin/custom_dashboard.html', context)
-
+@admin.register(StampOrder)
+class StampOrderAdmin(admin.ModelAdmin):
+    list_display = ('user', 'stamp_type', 'quantity', 'status', 'created_at')
+    list_filter = ('status', 'stamp_type')
+    search_fields = ('user__username', 'description')
 # ------ Advocate Inline & Admin ------
 class AdvocateInline(admin.StackedInline):
     model = Advocate

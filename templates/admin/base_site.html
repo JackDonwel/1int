@@ -1,51 +1,77 @@
-{% extends "admin/base.html" %}
 {% load static %}
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-gray-100">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Admin Panel{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-{% block extrahead %}
-{% load static %}
-<link rel="stylesheet" href="{% static 'css/custom.css' %}">
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<style>
-    /* ... keep your existing styles ... */
-</style>
-{% endblock %}
+    <!-- Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 
-{% block header %}
-<nav class="bg-gray-800">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between h-16">
-            <div class="flex items-center">
-                <div class="flex-shrink-0">
-                    <span class="text-white text-xl font-bold">TLS Admin</span>
-                </div>
-                <div class="hidden md:block ml-10">
-                    <div class="flex space-x-4">
-                        <!-- Existing navigation items -->
-                        <a href="{% url 'admin:custom_dashboard.html' %}" 
-                           class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
-                            Dashboard
-                        </a>
-                        <a href="{% url 'admin:core_advocate_changelist' %}" 
-                           class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
-                            Advocates
-                        </a>
-                        <!-- Application Page Button -->
-                        <a href="{% url 'apply_stamp' %}" 
-                           class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
-                            New Application
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <!-- Logout Button -->
-            <div class="hidden md:block">
-                <a href="{% url 'admin:logout' %}" 
-                   class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
-                    Logout
-                </a>
-            </div>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="{% static 'admin/css/custom.css' %}">
+
+    {% block extrahead %}{% endblock %}
+</head>
+<body class="h-full flex flex-col">
+
+<!-- Navbar -->
+<header class="bg-white shadow fixed w-full z-10 top-0">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+      <a class="navbar-brand d-flex align-items-center" href="{% url 'custom_dashboard' %}">
+    <div class="overflow-hidden rounded-circle shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105">
+        <img src="{% static 'images/logo_admin.png' %}" 
+             alt="TLS Admin Logo" 
+             width="40" 
+             height="40" 
+             class="object-cover hover:opacity-90"
+             style="border-radius: 50%;">
+    </div>
+    <span class="fw-bold fs-4 text-white ms-2">TLS ADMIN</span>
+</a>
+            <a href="{% url 'custom_dashboard' %}" class="text-gray-600 hover:text-blue-600"><i class="fas fa-home"></i> Dashboard</a>
+            <a href="{% url 'orders' %}" class="text-gray-600 hover:text-blue-600"><i class="fas fa-box"></i> Orders</a>
+
+            <form action="{% url 'logout' %}" method="post" class="inline">
+                {% csrf_token %}
+                <button type="submit" class="text-red-600 hover:text-red-800">
+                    <i class="fas fa-sign-out-alt mr-1"></i>Logout
+                </button>
+            </form>
         </div>
     </div>
-</nav>
-{% endblock %}
+</header>
+
+<!-- Layout with Sidebar -->
+<div class="flex pt-20">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-gray-800 text-white h-screen sticky top-16 hidden md:block">
+        <div class="p-6 space-y-6">
+            <h2 class="text-lg font-semibold uppercase">Menu</h2>
+            <nav class="space-y-3">
+                <a href="{% url 'custom_dashboard' %}" class="block hover:bg-gray-700 p-2 rounded"><i class="fas fa-tachometer-alt mr-2"></i>Dashboard</a>
+                <a href="{% url 'orders' %}" class="block hover:bg-gray-700 p-2 rounded"><i class="fas fa-box mr-2"></i>Orders</a>
+                <a href="{% url 'admin_settings' %}" class="block hover:bg-gray-700 p-2 rounded"><i class="fas fa-cogs mr-2"></i>Settings</a>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-6 overflow-auto">
+        {% block content %}
+        <div class="text-center text-gray-400">No content provided.</div>
+        {% endblock %}
+    </main>
+</div>
+
+<!-- Footer -->
+<footer class="bg-white text-center text-sm py-4 mt-auto shadow-inner">
+    &copy; {{ now|date:"Y" }} Developed by Jack Tuhoye Bombo | <a href="mailto:jdonwel@proton.me" class="text-blue-600 hover:underline">Contact</a>
+</footer>
+
+</body>
+</html>
