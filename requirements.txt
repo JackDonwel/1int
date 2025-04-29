@@ -1,0 +1,61 @@
+# requirements.txt
+
+# Core Django and utilities
+Django>=4.0  # Django framework
+djangorestframework>=3.14.0  # Django REST framework
+django-cors-headers>=3.0.0  # CORS headers for Django
+django-filter>=23.1  # Filtering for Django REST Framework
+django-environ>=0.8.1  # Environment variable management
+django-extensions>=3.2.0  # Extensions for Django (shell_plus, graph_models, etc.)
+
+# UI & Admin Enhancements
+django-simpleui>=2022.1  # Modern Django admin UI
+django-colorfield>=0.7.2  # Color picker field for Django models
+django-admin-sortable2>=0.13.0  # Sortable admin interface
+django-admin-bootstrapped>=1.0.0  # Bootstrap integration for Django admin
+django-admin-interface>=0.11.0  # Custom admin interface for Django
+django-admin-export>=0.1.0  # Export Django admin data to CSV/Excel
+
+
+# QR Code Generation
+qrcode[pillow]>=7.4.2  # QR code generator with PIL/pillow support
+pillow>=10.0.0  # Image processing library (required for qrcode[pil])
+
+# PDF & Report Generation
+reportlab>=4.0.0  # PDF generation library
+PyPDF2>=3.0.0  # PDF toolkit (merge, split, etc.)
+django-report-builder>=3.0.0  # Report generation for Django
+django-import-export>=3.0.0  # Import/export data in Django admin
+django-admin-export>=0.1.0  # Export Django admin data to CSV/Excel
+
+
+# SMS/Communication
+twilio>=7.0.0  # Twilio API for SMS/voice
+
+django-otp>=1.0.0  # One-time password authentication for Django
+django-two-factor-auth>=1.17.0  # Two-factor authentication for Django
+django-push-notifications>=1.5.0  # Push notifications for Django
+django-redis-cache>=2.0.0  # Redis cache backend for Django
+
+
+# Other utilities
+
+#location Tracking
+django-user-agents>=0.4.0  # User agent parsing for Django 
+geoip2>=4.0.0  # User agent parsing for Django
+django-cors-headers>=3.0.0  # CORS headers for Django
+django-extensions>=3.2.0  # Extensions for Django (shell_plus, graph_models, etc.)
+django-debug-toolbar>=4.0.0  # Debugging tool for Django
+django-filter>=23.1  # Filtering for Django REST Framework
+django-redis>=5.0.0  # Redis cache backend for Django
+django-storages>=1.13.0  # Storage backends for Django
+boto3>=1.26.0  # AWS SDK for Python
+django-environ>=0.8.1  # Environment variable management
+django-axes>=5.0.0  # Security app for Django (brute force protection)
+django-celery-beat>=2.4.0  # Periodic task scheduling for Django
+django-celery-results>=2.4.0  # Celery results backend for Django
+django-allauth>=0.51.0  # Authentication and registration
+django-rest-auth>=0.9.5  # REST API for Django authentication
+djangorestframework>=3.14.0  # Django REST framework
+djangorestframework-simplejwt>=5.0.0  # JWT authentication for Django REST framework
+django-crispy-forms>=1.14.0  # Form rendering for Django
