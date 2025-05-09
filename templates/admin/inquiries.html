@@ -1,0 +1,13 @@
+<h2>Inquiries</h2>
+<ul>
+  {% for ticket in tickets %}
+    <li>
+      <strong>{{ ticket.user.username }}:</strong> {{ ticket.message }} <br>
+      {% if ticket.is_answered %}
+        <em>Answered</em> | <a href="{% url 'reply_inquiry' ticket.id %}">View Reply</a>
+      {% else %}
+        <a href="{% url 'reply_inquiry' ticket.id %}">Reply</a>
+      {% endif %}
+    </li>
+  {% endfor %}
+</ul>

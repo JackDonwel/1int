@@ -1,0 +1,122 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-gray-100">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Admin Panel{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="{% static 'admin/css/custom.css' %}">
+
+    {% block extrahead %}{% endblock %}
+</head>
+<body class="h-full flex flex-col">
+
+<!-- Navbar -->
+<header class="bg-white shadow fixed w-full z-10 top-0 left-0 mt-0">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+      <a class="navbar-brand d-flex align-items-center" href="{% url 'adminpanel:custom_dashboard' %}
+">
+    <div class="overflow-hidden rounded-circle shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105">
+        <img src="{% static 'images/admin-logo.png' %}" 
+             alt="TLS Admin Logo" 
+             width="40" 
+             height="40" 
+             class="object-cover hover:opacity-90"
+             style="border-radius: 50%;">
+    </div>
+    <span class="fw-bold fs-4 text-white ms-2">TLS ADMIN</span>
+</a>
+            <a href="{% url 'adminpanel:custom_dashboard' %}" class="text-gray-600 hover:text-blue-600"><i class="fas fa-home"></i> Dashboard</a>
+            <a href="#" class="text-gray-600 hover:text-blue-600"><i class="fas fa-box"></i> Orders</a>
+            
+            <form action="{% url 'logout' %}" method="post" class="inline">
+                {% csrf_token %}
+                <button type="submit" class="text-red-600 hover:text-red-800">
+                    <i class="fas fa-sign-out-alt mr-1"></i>Logout
+                </button>
+            </form>
+        </div>
+    </div>
+</header>
+
+<!-- Layout with Sidebar -->
+<div class="flex pt-10 mt-16">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-gray-800 text-white h-screen sticky top-16 hidden md:block">
+        <div class="p-6 space-y-6">
+            <h2 class="text-lg font-semibold uppercase">Menu</h2>
+            <nav class="space-y-3">
+                                       <!-- Dashboard -->
+                    <a href="{% url 'adminpanel:custom_dashboard' %}" class="block hover:bg-gray-700 p-2 rounded">
+                        <i class="fas fa-tachometer-alt mr-2"></i> Dashboard
+                    </a>
+                    <a href="{% url 'adminpanel:admin_statistics' %}" class="block hover:bg-gray-700 p-2 rounded">
+                        <i class="fas fa-chart-bar mr-2"></i> Statistics
+                    </a>
+
+                    <!-- Products -->
+                    <a href="{% url 'adminpanel:dashboard_products' %}" class="block hover:bg-gray-700 p-2 rounded">
+                        <i class="fas fa-boxes mr-2"></i> Products
+                    </a>
+
+                    <!-- Stamps -->
+                    <a href="{% url 'adminpanel:dashboard_stamps' %}" class="block hover:bg-gray-700 p-2 rounded">
+                        <i class="fas fa-stamp mr-2"></i> Stamps
+                    </a>
+
+                    <!-- Orders -->
+                    <a href="{% url 'adminpanel:dashboard_orders' %}" class="block hover:bg-gray-700 p-2 rounded">
+                        <i class="fas fa-shopping-cart mr-2"></i> Orders
+                    </a>
+
+                    <!-- Queue -->
+                    <a href="{% url 'adminpanel:dashboard_queue' %}" class="block hover:bg-gray-700 p-2 rounded">
+                        <i class="fas fa-stream mr-2"></i> Queue
+                    </a>
+
+                    <!-- Inquiries -->
+                    <a href="{% url 'adminpanel:inquiries_list' %}" class="block hover:bg-gray-700 p-2 rounded">
+                        <i class="fas fa-envelope mr-2"></i> Inquiries
+                    </a>
+
+                    <!-- Stamp Orders -->
+                    <a href="{% url 'adminpanel:stamp_orders' %}" class="block hover:bg-gray-700 p-2 rounded">
+                        <i class="fas fa-stamp mr-2"></i> Stamp Orders
+                    </a>
+                    <a href="{% url 'adminpanel:new_stamp_order' %}" class="block hover:bg-gray-700 p-2 rounded">
+                        <i class="fas fa-plus mr-2"></i> New Stamp Order
+                    </a>
+
+                    <!-- Admin Settings -->
+                    <a href="{% url 'adminpanel:admin_settings' %}" class="block hover:bg-gray-700 p-2 rounded">
+                        <i class="fas fa-cogs mr-2"></i> Settings
+                    </a>
+                
+
+            </nav>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-6 overflow-auto">
+        {% block content %}
+        <div class="text-center text-gray-400">No content provided.</div>
+        {% endblock %}
+    </main>
+</div>
+
+<!-- Footer -->
+<footer class="bg-white text-center text-sm py-4 mt-auto shadow-inner">
+    &copy; {{ now|date:"Y" }} Developed by Jack Tuhoye Bombo | <a href="mailto:jdonwel@proton.me" class="text-blue-600 hover:underline">Contact</a>
+</footer>
+
+</body>
+</html>

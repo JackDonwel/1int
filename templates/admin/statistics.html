@@ -1,0 +1,189 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+{% load static %}
+
+
+{% block title %}
+    {% translate "Advanced Statistics" %}
+{% endblock %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/dashboard.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block header %}
+    <h1>{% translate "Advanced Statistics Dashboard" %}</h1>
+{% endblock %}
+
+{% block breadcrumbs %}
+    <div class="breadcrumbs">
+        <a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
+        &rsaquo; {% translate 'Advanced Statistics' %}
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="module">
+        <h2>{% translate "User Activity" %}</h2>
+        <div class="graph-container">
+            <canvas id="userActivityChart" width="400" height="200"></canvas>
+        </div>
+    </div>
+
+    <div class="module">
+        <h2>{% translate "Support Tickets" %}</h2>
+        <div class="graph-container">
+            <canvas id="supportTicketsChart" width="400" height="200"></canvas>
+        </div>
+    </div>
+
+    <div class="module">
+        <h2>{% translate "Stamp Orders" %}</h2>
+        <div class="graph-container">
+            <canvas id="stampOrdersChart" width="400" height="200"></canvas>
+        </div>
+    </div>
+
+    <div class="module">
+        <h2>{% translate "Notifications Sent" %}</h2>
+        <div class="graph-container">
+            <canvas id="notificationsChart" width="400" height="200"></canvas>
+        </div>
+    </div>
+    
+
+    {# ... (rest of your modules and Data Management section) ... #}
+
+    <script>
+        // User Signups Chart
+        const userActivityCtx = document.getElementById('userActivityChart').getContext('2d');
+        const userActivityChart = new Chart(userActivityCtx, {
+            type: 'line',
+            data: {
+                labels: {{ signup_labels|safe }},
+                datasets: [{
+                    label: '{% translate "New Users" %}',
+                    data: {{ signup_counts|safe }},
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: '{% translate "Number of Users" %}'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: '{% translate "Date" %}'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Support Tickets Chart
+        const supportTicketsCtx = document.getElementById('supportTicketsChart').getContext('2d');
+        const supportTicketsChart = new Chart(supportTicketsCtx, {
+            type: 'line',
+            data: {
+                labels: {{ ticket_labels|safe }},
+                datasets: [{
+                    label: '{% translate "Tickets Created" %}',
+                    data: {{ ticket_counts|safe }},
+                    borderColor: 'rgb(255, 99, 132)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: '{% translate "Number of Tickets" %}'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: '{% translate "Date" %}'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Stamp Orders Chart
+        const stampOrdersCtx = document.getElementById('stampOrdersChart').getContext('2d');
+        const stampOrdersChart = new Chart(stampOrdersCtx, {
+            type: 'line',
+            data: {
+                labels: {{ order_labels|safe }},
+                datasets: [{
+                    label: '{% translate "Stamp Orders Placed" %}',
+                    data: {{ order_counts|safe }},
+                    borderColor: 'rgb(54, 162, 235)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: '{% translate "Number of Orders" %}'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: '{% translate "Date" %}'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Notifications Sent Chart
+        const notificationsCtx = document.getElementById('notificationsChart').getContext('2d');
+        const notificationsChart = new Chart(notificationsCtx, {
+            type: 'line',
+            data: {
+                labels: {{ notification_labels|safe }},
+                datasets: [{
+                    label: '{% translate "Notifications Sent" %}',
+                    data: {{ notification_counts|safe }},
+                    borderColor: 'rgb(255, 206, 86)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: '{% translate "Number of Notifications" %}'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: '{% translate "Date" %}'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+
+{% endblock %}

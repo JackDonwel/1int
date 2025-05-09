@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5 text-dark">
+    <h2 class="mb-4">Apply for Wakili Stamp</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="POST" class="p-4 bg-white border rounded shadow-sm">
+        {% csrf_token %}
+        <div class="mb-3">
+            {{ form.as_p }}
+        </div>
+
+        <h5 class="mt-4 text-dark">Choose Payment Method</h5>
+        <div class="form-check mb-2">
+            <input class="form-check-input" type="radio" name="payment_method" id="flutterwave" value="flutterwave" checked>
+            <label class="form-check-label text-dark" for="flutterwave">
+                Pay with Card / Mobile Money (Flutterwave)
+            </label>
+        </div>
+
+        <div class="form-check mb-3">
+            <input class="form-check-input" type="radio" name="payment_method" id="manual" value="manual">
+            <label class="form-check-label text-dark" for="manual">
+                Pay Offline (Bank deposit / Mobile transfer)
+            </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit & Pay</button>
+    </form>
+
+    <div class="mt-5 p-3 bg-light border rounded">
+        <h6 class="text-dark">Other Payment Options:</h6>
+        <ul class="text-dark">
+            <li><strong>Bank Transfer:</strong> Wakili Bank - Acc No: 123456789</li>
+            <li><strong>Mobile Money:</strong> M-Pesa / TigoPesa / AirtelMoney - 0712 345 678 (Name: WakiliTech)</li>
+            <li>After payment, email the receipt to: <a href="mailto:payments@wakili.tz">payments@wakili.tz</a></li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

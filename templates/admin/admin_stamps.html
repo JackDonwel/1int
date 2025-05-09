@@ -1,0 +1,322 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}
+    {% translate "Manage Stamp Applications" %}
+{% endblock %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/admin_stamps.css' %}">
+{% endblock %}
+
+{% block header %}
+    <h1>{% translate "Manage Stamp Applications" %}</h1>
+{% endblock %}
+
+{% block breadcrumbs %}
+    <div class="breadcrumbs">
+        <a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
+        &rsaquo; {% translate 'Stamp Applications' %}
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="module">
+        <table>
+            <caption><h2>{% translate "All Stamp Applications" %}</h2></caption>
+            <thead>
+                <tr>
+                    <th>{% translate "Application ID" %}</th>
+                    <th>{% translate "Advocate TLS ID" %}</th>
+                    <th>{% translate "Stamp Type" %}</th>
+                    <th>{% translate "Application Date" %}</th>
+                    <th>{% translate "Status" %}</th>
+                    <th>{% translate "Actions" %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for application in applications %}
+                    <tr>
+                        <td>{{ application.id }}</td>
+                        <td><a href="{% url 'admin:advocates_advocate_change' application.advocate.id %}">{{ application.advocate.tls_id }}</a></td>
+                        <td>{{ application.get_stamp_type_display }}</td>
+                        <td>{{ application.application_date|date:"d M Y H:i" }}</td>
+                        <td>
+                            <span class="status-{{ application.status }}">
+                                {{ application.get_status_display }}
+                            </span>
+                        </td>
+                        <td class="actions">
+                            <a href="{% url 'admin_view_stamp_application' application.id %}" class="view-link">{% translate "View" %}</a>
+                            {% if application.status == 'pending' %}
+                                <a href="{% url 'admin_approve_stamp_application' application.id %}" class="approve-link">{% translate "Approve" %}</a>
+                                <a href="{% url 'admin_decline_stamp_application' application.id %}" class="decline-link">{% translate "Decline" %}</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="6" class="empty">{% translate "No stamp applications found." %}</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="modal fade" id="declineModal" tabindex="-1" role="dialog" aria-labelledby="declineModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="declineModalLabel">{% translate "Decline Stamp Application" %}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form method="post" action="#" id="declineForm">
+                        {% csrf_token %}
+                        <input type="hidden" name="application_id" id="decline-application-id">
+                        <div class="form-group">
+                            <label for="rejection_reason">{% translate "Reason for Rejection:" %}</label>
+                            <textarea class="form-control" id="rejection_reason" name="rejection_reason" rows="3" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-danger">{% translate "Decline Application" %}</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">{% translate "Close" %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const declineLinks = document.querySelectorAll('.decline-link');
+            const declineModal = document.getElementById('declineModal');
+            const declineApplicationIdInput = document.getElementById('decline-application-id');
+            const declineForm = document.getElementById('declineForm');
+
+            declineLinks.forEach(link => {
+                link.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    const applicationId = this.getAttribute('href').split('/').pop();
+                    declineApplicationIdInput.value = applicationId;
+                    declineForm.action = `/admin/stamps/decline/${applicationId}/`; // Set the correct action URL
+                    $(declineModal).modal('show');
+                });
+            });
+
+            $(declineModal).on('hidden.bs.modal', function () {
+                document.getElementById('rejection_reason').value = ''; // Clear the reason when modal is closed
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block stylesheet %}
+    {{ block.super }}
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/admin_stamps.css' %}">
+{% endblock %}
+
+{% block javascript %}
+    {{ block.super }}
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+{% endblock %}
+
+<style>
+    /* Custom styles for admin_stamps.css */
+    #content h1 {
+        color: #333;
+        margin-bottom: 1em;
+    }
+
+    .module caption h2 {
+        font-size: 1.5em;
+        color: #555;
+        margin-bottom: 0.5em;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1em;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        border-radius: 4px;
+        overflow: hidden;
+        background-color: #fff;
+    }
+
+    th, td {
+        padding: 0.75em;
+        text-align: left;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    th {
+        background-color: #e9ecef;
+        font-weight: 600;
+        color: #495057;
+    }
+
+    tbody tr:nth-child(even) {
+        background-color: #f8f9fa;
+    }
+
+    tbody tr:hover {
+        background-color: #f1f3f5;
+    }
+
+    .actions a {
+        display: inline-block;
+        margin-right: 0.5em;
+        text-decoration: none;
+        padding: 0.3em 0.6em;
+        border-radius: 0.2em;
+        font-size: 0.9em;
+    }
+
+    .view-link {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .approve-link {
+        background-color: #28a745;
+        color: white;
+    }
+
+    .decline-link {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .view-link:hover {
+        background-color: #0056b3;
+    }
+
+    .approve-link:hover {
+        background-color: #1e7e34;
+    }
+
+    .decline-link:hover {
+        background-color: #c82333;
+    }
+
+    .status-pending {
+        color: #ffc107;
+        font-weight: bold;
+    }
+
+    .status-ready {
+        color: #28a745;
+        font-weight: bold;
+    }
+
+    .status-rejected {
+        color: #dc3545;
+        font-weight: bold;
+    }
+
+    .status-collected {
+        color: #17a2b8;
+        font-weight: bold;
+    }
+
+    .empty {
+        text-align: center;
+        padding: 1em;
+        color: #6c757d;
+    }
+
+    /* Modal Styles */
+    .modal-header {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+        padding: 1em 1.5em;
+        border-top-left-radius: 0.3em;
+        border-top-right-radius: 0.3em;
+    }
+
+    .modal-title {
+        font-size: 1.25em;
+        color: #495057;
+    }
+
+    .modal-body {
+        padding: 1.5em;
+    }
+
+    .modal-footer {
+        border-top: 1px solid #dee2e6;
+        padding: 1em;
+        display: flex;
+        justify-content: flex-end;
+        border-bottom-left-radius: 0.3em;
+        border-bottom-right-radius: 0.3em;
+    }
+
+    .form-group {
+        margin-bottom: 1.5em;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5em;
+        font-weight: bold;
+        color: #495057;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.75em;
+        border: 1px solid #ced4da;
+        border-radius: 0.25em;
+        box-sizing: border-box;
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        color: white;
+        border: none;
+        padding: 0.75em 1.5em;
+        border-radius: 0.25em;
+        cursor: pointer;
+        font-size: 1em;
+        margin-right: 0.5em;
+    }
+
+    .btn-danger {
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        padding: 0.75em 1.5em;
+        border-radius: 0.25em;
+        cursor: pointer;
+        font-size: 1em;
+    }
+
+    .btn-secondary:hover {
+        background-color: #5a6268;
+    }
+
+    .btn-danger:hover {
+        background-color: #c82333;
+    }
+
+    .close {
+        color: #000;
+        opacity: 0.5;
+        text-decoration: none;
+        font-size: 1.5em;
+        font-weight: bold;
+    }
+
+    .close:hover {
+        opacity: 0.75;
+        cursor: pointer;
+    }
+</style>

@@ -1,0 +1,181 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}
+    {% translate "Admin Orders" %}
+{% endblock %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/admin_orders.css' %}">
+    <style>
+        #orders-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        #orders-table th, #orders-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        #orders-table tr:hover {
+            background-color: #f9f9f9;
+        }
+        .actions a {
+            margin-right: 5px;
+        }
+        .status-select {
+            display: flex;
+            align-items: center;
+        }
+        .status-select select {
+            margin-right: 10px;
+        }
+        .search-bar {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .search-bar input {
+            width: 300px;
+            padding: 5px;
+        }
+        .pagination {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .pagination a {
+            margin: 0 5px;
+            text-decoration: none;
+            color: #007bff;
+        }
+        .pagination a.active {
+            font-weight: bold;
+            text-decoration: underline;
+        }
+    </style>
+{% endblock %}
+
+{% block header %}
+    <h1>{% translate "Admin Orders" %}</h1>
+{% endblock %}
+
+{% block breadcrumbs %}
+    <nav class="breadcrumbs" aria-label="breadcrumb">
+        <a href="{% url 'adminpanel:custom_dashboard' %}">{% translate 'Home' %}</a>
+        &rsaquo; {% translate 'Orders' %}
+    </nav>
+{% endblock %}
+
+{% block content %}
+    {% if messages %}
+        <ul class="messagelist">
+            {% for message in messages %}
+                <li class="{{ message.tags }}">
+                    {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}Error:{% endif %} {{ message }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <div class="search-bar">
+        <input type="text" placeholder="{% translate 'Search orders...' %}" id="search-input">
+        <button type="button" id="search-button">{% translate "Search" %}</button>
+    </div>
+
+    <div class="module">
+        <table id="orders-table">
+            <caption>
+                <h2>{% translate "All Orders" %}</h2>
+            </caption>
+            <thead>
+                <tr>
+                    <th>{% translate "Order ID" %}</th>
+                    <th>{% translate "User" %}</th>
+                    <th>{% translate "Color" %}</th>
+                    <th>{% translate "Qty" %}</th>
+                    <th>{% translate "Payment" %}</th>
+                    <th>{% translate "Address" %}</th>
+                    <th>{% translate "Created" %}</th>
+                    <th>{% translate "Status" %}</th>
+                    <th class="actions">{% translate "Actions" %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                    <tr>
+                        <td><a href="#">{{ order.id }}</a></td>
+                        <td><a href="{% url 'admin:auth_user_change' order.user.id %}">{{ order.user.username }}</a></td>
+                        <td>{{ order.get_color_type_display }}</td>
+                        <td>{{ order.quantity }}</td>
+                        <td>{{ order.get_payment_method_display }}</td>
+                        <td class="address" title="{{ order.delivery_address }}">{{ order.delivery_address|truncatechars:50 }}</td>
+                        <td>{{ order.created|date:"d M Y H:i" }}</td>
+                        <td class="status-cell">
+                            <form method="post" class="status-form">
+                                {% csrf_token %}
+                                <input type="hidden" name="order_id" value="{{ order.id }}">
+                                <div class="status-select">
+                                    <select name="status" aria-label="{% translate 'Order Status' %}">
+                                        {% for value, display in order.STATUS_CHOICES %}
+                                            <option value="{{ value }}" {% if value == order.status %}selected{% endif %}>
+                                                {{ display }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                    <button type="submit" class="update-button">{% translate "Update" %}</button>
+                                </div>
+                            </form>
+                        </td>
+                        <td class="actions">
+                            <a href="#" class="view-link" title="{% translate 'View Order Details' %}">🔍</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="9" class="empty">{% translate "No orders found." %}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="pagination">
+        {% if orders.has_previous %}
+            <a href="?page={{ orders.previous_page_number }}">{% translate "Previous" %}</a>
+        {% endif %}
+        <span>{% translate "Page" %} {{ orders.number }} {% translate "of" %} {{ orders.paginator.num_pages }}</span>
+        {% if orders.has_next %}
+            <a href="?page={{ orders.next_page_number }}">{% translate "Next" %}</a>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block javascript %}
+    {{ block.super }}
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.status-form select').forEach(select => {
+                const updateButton = select.closest('.status-select').querySelector('.update-button');
+                const initialStatus = select.value;
+
+                select.addEventListener('change', () => {
+                    updateButton.style.display = select.value !== initialStatus ? 'inline-block' : 'none';
+                });
+
+                // Hide the update button initially
+                updateButton.style.display = 'none';
+            });
+
+            const searchInput = document.getElementById('search-input');
+            const searchButton = document.getElementById('search-button');
+            searchButton.addEventListener('click', () => {
+                const query = searchInput.value.trim();
+                if (query) {
+                    window.location.href = `?search=${encodeURIComponent(query)}`;
+                }
+            });
+        });
+    </script>
+{% endblock %}

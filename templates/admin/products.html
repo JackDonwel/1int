@@ -1,0 +1,257 @@
+{% extends 'admin/base_site.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% translate "Product Management" %}{% endblock %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/product_management.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="module">
+        <h1>{% translate "Product Management" %}</h1>
+    </div>
+
+    <div class="module" id="add-product">
+        <h2>{% translate "Add New Product" %}</h2>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-row">
+                <label for="{{ form.name.id_for_label }}">{% translate "Name:" %}</label>
+                {{ form.name }}
+                {% if form.name.errors %}
+                    <div class="errorlist">{{ form.name.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="form-row">
+                <label for="{{ form.price_tzs.id_for_label }}">{% translate "Price (TZS):" %}</label>
+                {{ form.price_tzs }}
+                {% if form.price_tzs.errors %}
+                    <div class="errorlist">{{ form.price_tzs.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="form-row">
+                <label for="{{ form.category.id_for_label }}">{% translate "Category:" %}</label>
+                {{ form.category }}
+                {% if form.category.errors %}
+                    <div class="errorlist">{{ form.category.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="form-row">
+                <label for="{{ form.image.id_for_label }}">{% translate "Image:" %}</label>
+                {{ form.image }}
+                {% if form.image.errors %}
+                    <div class="errorlist">{{ form.image.errors }}</div>
+                {% endif %}
+                <p class="help">{{ form.image.help_text }}</p>
+            </div>
+            <div class="form-row">
+                <label for="{{ form.description.id_for_label }}">{% translate "Description:" %}</label>
+                {{ form.description }}
+                {% if form.description.errors %}
+                    <div class="errorlist">{{ form.description.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="form-row">
+                <button type="submit" class="button">{% translate "Add Product" %}</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="module" id="product-list">
+        <h2>{% translate "All Products" %}</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>{% translate "Name" %}</th>
+                    <th>{% translate "Price" %}</th>
+                    <th>{% translate "Created" %}</th>
+                    <th>{% translate "Image" %}</th>
+                    <th>{% translate "Actions" %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                    <tr>
+                        <td>{{ product.name }}</td>
+                        <td>{{ product.price_tzs }}</td>
+                        <td>{{ product.created|date:"Y-m-d H:i" }}</td>
+                        <td>
+                            {% if product.image %}
+                                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+                            {% else %}
+                                {% translate "No image" %}
+                            {% endif %}
+                        </td>
+                        <td class="actions">
+                            <a href="#">{% translate "Edit" %}</a> |
+                            <a href="#" class="delete-link">{% translate "Delete" %}</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5" class="empty">{% translate "No products found." %}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
+
+{% block stylesheet %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/forms.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/widgets.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/base.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/module.css' %}">
+{% endblock %}
+
+<style>
+    /* Custom styles for product_management.css */
+    #add-product {
+        background-color: #f8f9fa;
+        padding: 1.5em;
+        margin-bottom: 2em;
+        border: 1px solid #dee2e6;
+        border-radius: 0.5em; /* More rounded container */
+    }
+
+    #add-product h2 {
+        color: #495057;
+        margin-top: 0;
+        margin-bottom: 1.2em; /* Increased bottom margin */
+        font-size: 1.75em; /* Slightly larger heading */
+    }
+
+    #add-product .form-row {
+        margin-bottom: 1.5em; /* Increased space between form rows */
+        display: flex;
+        align-items: center;
+    }
+
+    #add-product label {
+        display: inline-block;
+        width: 120px;
+        font-weight: bold;
+        color: #495057;
+        margin-right: 1.2em; /* Increased right margin */
+    }
+
+    #add-product input[type="text"],
+    #add-product input[type="number"],
+    #add-product input[type="file"],
+    #add-product select,
+    #add-product textarea {
+        padding: 0.6em; /* Slightly more padding inside inputs */
+        border: 1px solid #ced4da;
+        border-radius: 0.3em; /* Rounded input corners */
+        flex-grow: 1;
+    }
+
+    #add-product textarea {
+        min-height: 100px; /* Slightly taller textarea */
+    }
+
+    #add-product .errorlist {
+        color: #dc3545;
+        font-size: 0.9em;
+        margin-top: 0.3em;
+        padding-left: 120px; /* Align with input field */
+    }
+
+    #add-product .help {
+        color: #6c757d;
+        font-size: 0.9em;
+        display: block;
+        margin-top: 0.3em;
+        padding-left: 120px; /* Align with input field */
+    }
+
+    #add-product .button {
+        padding: 0.8em 1.8em; /* Slightly larger button */
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 0.3em; /* Rounded button corners */
+        cursor: pointer;
+        font-size: 1.1em;
+    }
+
+    #add-product .button:hover {
+        background-color: #0056b3;
+    }
+
+    #product-list {
+        margin-top: 2.5em; /* Increased top margin */
+    }
+
+    #product-list h2 {
+        color: #495057;
+        margin-top: 0;
+        margin-bottom: 1.2em; /* Increased bottom margin */
+        font-size: 1.75em; /* Slightly larger heading */
+    }
+
+    #product-list table {
+        width: 100%;
+        border-collapse: collapse;
+        box-shadow: 0 1px 5px rgba(0, 0, 0, 0.15); /* Slightly more pronounced shadow */
+        border-radius: 0.5em; /* Rounded table corners */
+        overflow: hidden;
+        background-color: #fff;
+    }
+
+    #product-list thead {
+        background-color: #e9ecef;
+    }
+
+    #product-list th {
+        padding: 1.2em; /* More padding in table headers */
+        text-align: left;
+        font-weight: 600;
+        color: #495057;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    #product-list td {
+        padding: 1.2em; /* More padding in table cells */
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    #product-list tbody tr:nth-child(even) {
+        background-color: #f8f9fa;
+    }
+
+    #product-list tbody tr:hover {
+        background-color: #f1f3f5;
+    }
+
+    #product-list .product-image {
+        max-height: 90px; /* Slightly larger image */
+        border-radius: 0.3em; /* Rounded image corners */
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15); /* Subtle image shadow */
+    }
+
+    #product-list .actions a {
+        color: #007bff;
+        text-decoration: none;
+        margin-right: 0.8em; /* More space between action links */
+    }
+
+    #product-list .actions a:hover {
+        text-decoration: underline;
+    }
+
+    #product-list .delete-link {
+        color: #dc3545;
+    }
+
+    #product-list .empty {
+        text-align: center;
+        padding: 1.5em; /* More padding for empty message */
+        color: #6c757d;
+        font-style: italic;
+    }
+</style>
