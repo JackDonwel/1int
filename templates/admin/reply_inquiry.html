@@ -1,8 +1,0 @@
-<h2>Reply to {{ ticket.user.username }}</h2>
-<p><strong>Message:</strong> {{ ticket.message }}</p>
-
-<form method="post">
-  {% csrf_token %}
-  <textarea name="reply" rows="5" cols="50">{{ ticket.reply }}</textarea><br>
-  <button type="submit">Send Reply</button>
-</form>
