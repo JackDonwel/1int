@@ -7,7 +7,7 @@ This is the backend REST API built using Django and Django REST Framework. It ma
 
 ## 📦 Base URL
 ```
-http://your-domain.com/api/
+http://tls.com/api/
 ```
 
 ---
