@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'core.apps.CoreConfig', 
     'adminpanel.apps.AdminPanelConfig',   # Custom admin app
     'rest_framework',
+    'drf_yasg',
     'api',
 ]
 
@@ -98,10 +99,10 @@ DATABASES = {
         'NAME': 'donwell',
         'USER': 'donwell',
         'PASSWORD': 'ott123',
-        'HOST': '127.0.0.1',
+        'HOST': '',
         'PORT': '3306',
         'OPTIONS': {
-            'unix_socket': '/path/to/your/mysql.sock',
+            'unix_socket': '/run/mysqld/mysqld.sock',
         },
     }
 
@@ -198,11 +199,9 @@ EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASS')
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
-        # 'rest_framework.authentication.SessionAuthentication', # If you want to use SessionAuth
+        'rest_framework.authentication.SessionAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',  #  Default to authenticated access
-    ],
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10  # You can set a default page size
+        'rest_framework.permissions.IsAuthenticated',
+    ]
 }
