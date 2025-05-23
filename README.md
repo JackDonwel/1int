@@ -61,7 +61,7 @@ curl -X POST http://127.0.0.1:8000/auth/login/ \
 git clone https://github.com/your-username/your-repo.git
 cd your-repo
 
-# Create and activate virtual environment
+# Create and activate virtual environment make sure it's outside the project eg my-project/1int-main
 python3 -m venv env
 source env/bin/activate
 
